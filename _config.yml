@@ -23,13 +23,16 @@ repository               : "academicpages/academicpages.github.io"
 author:
   # Biographic information
   avatar           : "profile.png"
-  name             : "Your Sidebar Name"
+  name             : "Yiyu Wang (Ian)"
   pronouns         : # example: "she/her"  
-  bio              : "Short biography for the left-hand sidebar"
-  location         : "Earth"
-  employer         : "Red Brick University"
+  bio              : "Sophomore Student
+  Shanghai Jiao Tong University, Mechanical Engineering
+  University of Michigan, Computer Science"
+  # location         : "Earth"
+  # employer         : "Red Brick University"
   uri              : # URL
-  email            : "none@example.org" 
+  email            : "wyyian9102@sjtu.edu.cn
+  wangyiyu@umich.edu" 
 
   # Academic websites
   academia         : # URL
