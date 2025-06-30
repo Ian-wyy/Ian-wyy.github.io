@@ -14,9 +14,9 @@ I am actively looking for research internships during my junior and senior years
 
 You can find my CV here: [Yiyu Wang's Curriculum Vitae]().
 
-[Email](wangyiyu@umich.edu) / [Github](https://github.com/Ian-wyy) / [LinkedIn](https://www.linkedin.com/in/%E5%A5%95%E7%BE%BD-%E6%B1%AA-046724360/)
+[Email](wangyiyu@umich.edu) / [Github](https://github.com/Ian-wyy) / [LinkedIn](https://www.linkedin.com/in/%E5%A5%95%E7%BE%BD-%E6%B1%AA-046724360/) / [Wechat](../images/wechat.png)
 
-Interests
+**Interests**
 - Robotics
 - Multi-robot system
 - Motion Planning
