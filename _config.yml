@@ -9,7 +9,7 @@
 # Basic Site Settings
 locale                   : "en-US"
 site_theme               : "default"
-title                    : "Your Name / Site Title"
+title                    : "Yiyu Wang"
 title_separator          : "-"
 name                     : &name "Your Name"
 description              : &description "personal description"
@@ -25,10 +25,7 @@ author:
   avatar           : "Ian.png"
   name             : "Yiyu Wang (Ian)"
   pronouns         : # example: "she/her"  
-  bio: |
-   Sophomore Student  
-   Shanghai Jiao Tong University, Mechanical Engineering  
-   University of Michigan, Computer Science
+  bio: "Sophomore Student<br>Shanghai Jiao Tong University<br>University of Michigan"
   location         : # "Earth"
   employer         : # "Red Brick University"
   uri              : # URL
