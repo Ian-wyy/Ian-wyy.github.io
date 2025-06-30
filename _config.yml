@@ -25,14 +25,11 @@ author:
   avatar           : "profile.png"
   name             : "Yiyu Wang (Ian)"
   pronouns         : # example: "she/her"  
-  bio              : "Sophomore Student
-  Shanghai Jiao Tong University, Mechanical Engineering
-  University of Michigan, Computer Science"
-  # location         : "Earth"
-  # employer         : "Red Brick University"
+  bio              : "Sophomore Student Shanghai Jiao Tong University, Mechanical Engineering University of Michigan, Computer Science"
+  location         : # "Earth"
+  employer         : # "Red Brick University"
   uri              : # URL
-  email            : "wyyian9102@sjtu.edu.cn
-  wangyiyu@umich.edu" 
+  email            : "wyyian9102@sjtu.edu.cn,wangyiyu@umich.edu" 
 
   # Academic websites
   academia         : # URL
