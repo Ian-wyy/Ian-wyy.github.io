@@ -26,9 +26,9 @@ author:
   name             : "Yiyu Wang (Ian)"
   pronouns         : # example: "she/her"  
   bio: |
-  Sophomore Student  
-  Shanghai Jiao Tong University, Mechanical Engineering  
-  University of Michigan, Computer Science
+   Sophomore Student  
+   Shanghai Jiao Tong University, Mechanical Engineering  
+   University of Michigan, Computer Science
   location         : # "Earth"
   employer         : # "Red Brick University"
   uri              : # URL
@@ -64,7 +64,7 @@ author:
   keybase          : # Username
   instagram        : # Username
   lastfm           : # Username
-  linkedin         : https://www.linkedin.com/in/%E5%A5%95%E7%BE%BD-%E6%B1%AA-046724360/ # Username
+  linkedin         : "https://www.linkedin.com/in/%E5%A5%95%E7%BE%BD-%E6%B1%AA-046724360/" # Username
   mastodon         : # URL
   medium           : # URL
   pinterest        : # Username
