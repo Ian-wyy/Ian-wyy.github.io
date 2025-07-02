@@ -19,11 +19,6 @@
         "network": "LinkedIn",
         "username": "Yiyu Wang",
         "url": "https://www.linkedin.com/in/%E5%A5%95%E7%BE%BD-%E6%B1%AA-046724360/"
-      },
-      {
-        "network": "Google Scholar",
-        "username": "Yiyu Wang",
-        "url": "https://scholar.google.com/citations?user=kKKvRXsAAAAJ&hl=en"
       }
     ]
   },
@@ -90,6 +85,17 @@
       "fluency": "Fluent"
     }
   ],
+
+  "teaching": [
+  {
+    "course": "ME2110J: Introduction to Solid Mechanics",
+    "institution": "Shanghai Jiao Tong University, Joint Institute",
+    "date": "2025-04",
+    "role": "Teaching Assistant",
+    "description": "Assisted with lab instruction, grading, and answering student questions for an undergraduate mechanics course."
+  }
+  ],
+
 
   "references": [
     {
