@@ -23,9 +23,7 @@ Open `index.html` and edit the section you want; the comments mark them off
   "Earlier news" block, so old items can just stay in the file.
 - **Publications.** One `<tr>` per paper: thumbnail on the left
   (`class="papershot"`), title / authors / venue / links / summary on the right.
-- **CV.** The CV is deliberately *not* checked in — `.gitignore` blocks `*.pdf` so a
-  browser of this repo cannot download it. It lives in the `Ian-wyy/phd-cv` LaTeX repo.
-  If a public link is ever wanted, host the PDF elsewhere and link out.
+
 
 ## Previewing locally
 
