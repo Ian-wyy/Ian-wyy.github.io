@@ -1,0 +1,265 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Yiyu Wang</title>
+
+    <meta name="author" content="Yiyu Wang">
+    <meta name="description" content="Yiyu Wang is an undergraduate student at Shanghai Jiao Tong University and the University of Michigan, working on planning and search for multi-robot systems.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+  </head>
+
+  <body>
+    <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+      <tr style="padding:0px">
+        <td style="padding:0px">
+
+          <!-- ===================== Header ===================== -->
+          <table class="header-table" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+            <tr style="padding:0px">
+              <td style="padding:2.5%;width:63%;vertical-align:middle">
+                <p class="name" style="text-align: center;">
+                  Yiyu Wang
+                </p>
+                <p>
+                  I'm an undergraduate student at
+                  <a href="https://en.sjtu.edu.cn/">Shanghai Jiao Tong University</a> (B.S. in Mechanical Engineering)
+                  and at the <a href="https://umich.edu/">University of Michigan, Ann Arbor</a> (B.S. in Computer Science, second bachelor's).
+                  I work in the <a href="https://rap-lab.github.io/">Robotics Autonomy and Planning Lab</a> with
+                  <a href="https://rap-lab.github.io/team/zren/">Prof. Zhongqiang (Richard) Ren</a>, in the
+                  <a href="https://ssi.robotics.umich.edu/">Scalable Spatial Intelligence Lab</a> with
+                  <a href="https://ssi.robotics.umich.edu/">Prof. Yulun Tian</a>, and in the
+                  <a href="https://www.cs.cmu.edu/~softagents/">Advanced Agent-Robotics Technology Lab</a> at
+                  <a href="https://www.cmu.edu/">Carnegie Mellon University</a> with
+                  <a href="https://www.ri.cmu.edu/ri-faculty/katia-sycara/">Prof. Katia Sycara</a>.
+                </p>
+                <p>
+                  I work on planning and search for multi-robot systems &mdash; heterogeneous routing, task
+                  allocation, and autonomous exploration &mdash; and I build the solvers and the robots that run them.
+                  More recently I have been working on neuro-symbolic learning and coding-agent systems that close the
+                  loop between structured reasoning and executable code.
+                </p>
+                <p style="color: rgb(167, 13, 13)">
+                  I am actively looking for research internships, and for a Ph.D. position in robotics,
+                  computer science, or related fields starting in Fall 2027.
+                </p>
+                <p style="text-align:center">
+                  <a href="mailto:wangyiyu@umich.edu">Email</a> &nbsp;/&nbsp;
+                  <a href="https://github.com/Ian-wyy">Github</a> &nbsp;/&nbsp;
+                  <a href="https://www.linkedin.com/in/%E5%A5%95%E7%BE%BD-%E6%B1%AA-046724360/">LinkedIn</a> &nbsp;/&nbsp;
+                  <a href="images/wechat.png">WeChat</a>
+                </p>
+              </td>
+              <td style="padding:1.5%;width:37%;max-width:37%">
+                <a class="profile-frame" href="images/Ian.png"><img alt="profile photo" src="images/Ian.png" class="profile-photo hoverZoomLink"></a>
+              </td>
+            </tr>
+          </tbody></table>
+
+          <!-- ===================== News + Research ===================== -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+            <tr>
+              <td style="padding:16px;width:100%;vertical-align:middle">
+                <h2>News</h2>
+                <div id="recent-news">
+                  <p class="news-item" data-month="2026-06">
+                    <strong>[Jun 2026]</strong> Our paper on min-max constrained heterogeneous multi-robot routing was
+                    accepted to <a href="https://www.iros.org/">IROS 2026</a>, and the solver is released on PyPI as
+                    <a href="https://pypi.org/project/PyRCH/">PyRCH</a>.
+                  </p>
+                  <p class="news-item" data-month="2026-05">
+                    <strong>[May 2026]</strong> I joined the
+                    <a href="https://www.cs.cmu.edu/~softagents/">Advanced Agent-Robotics Technology Lab</a> at Carnegie
+                    Mellon University, advised by
+                    <a href="https://www.ri.cmu.edu/ri-faculty/katia-sycara/">Prof. Katia Sycara</a>.
+                  </p>
+                  <p class="news-item" data-month="2025-10">
+                    <strong>[Oct 2025]</strong> The HEHA preprint is on
+                    <a href="https://arxiv.org/abs/2510.04161">arXiv</a>.
+                  </p>
+                  <p class="news-item" data-month="2025-09">
+                    <strong>[Sep 2025]</strong> Our paper HEHA was accepted to the IEEE International Symposium on
+                    Multi-Robot and Multi-Agent Systems (MRS 2025) as a poster paper.
+                  </p>
+                  <p class="news-item" data-month="2025-08">
+                    <strong>[Aug 2025]</strong> I started my second bachelor's in Computer Science at the University of
+                    Michigan and joined the
+                    <a href="https://ssi.robotics.umich.edu/">Scalable Spatial Intelligence Lab</a>.
+                  </p>
+                  <p class="news-item" data-month="2024-08">
+                    <strong>[Aug 2024]</strong> I joined the
+                    <a href="https://rap-lab.github.io/">Robotics Autonomy and Planning Lab</a>, advised by
+                    <a href="https://rap-lab.github.io/team/zren/">Prof. Zhongqiang (Richard) Ren</a>.
+                  </p>
+                </div>
+                <details class="news-archive" id="news-archive" hidden>
+                  <summary>Earlier news <span id="news-archive-count"></span></summary>
+                  <div id="earlier-news"></div>
+                </details>
+                <script>
+                  (() => {
+                    const now = new Date();
+                    const cutoff = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+                    const archive = document.getElementById('news-archive');
+                    const earlierNews = document.getElementById('earlier-news');
+                    const items = [...document.querySelectorAll('#recent-news .news-item')];
+
+                    items.forEach((item) => {
+                      const [year, month] = item.dataset.month.split('-').map(Number);
+                      if (new Date(year, month - 1, 1) < cutoff) earlierNews.appendChild(item);
+                    });
+
+                    if (earlierNews.children.length) {
+                      archive.hidden = false;
+                      document.getElementById('news-archive-count').textContent =
+                        `(${earlierNews.children.length})`;
+                    }
+                  })();
+                </script>
+
+                <h2>Research</h2>
+                <p>
+                  I am interested in multi-agent and robot systems, heuristic search, task and motion planning, and
+                  robot learning. Most of my work asks how a team of physically different robots should divide up and
+                  order the work in front of them, and how to compute those plans fast enough to run on real hardware.
+                </p>
+              </td>
+            </tr>
+          </tbody></table>
+
+          <!-- ===================== Publications ===================== -->
+          <table class="stack-table" style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+
+            <tr>
+              <td style="padding:16px;width:25%;vertical-align:middle">
+                <img src="images/routing.png" class="papershot" alt="min-max heterogeneous routing">
+              </td>
+              <td style="padding:8px;width:75%;vertical-align:middle">
+                <a href="https://pypi.org/project/PyRCH/">
+                  <span class="papertitle">Algorithms and Solvers for Min-Max Constrained Heterogeneous Multi-Robot Routing Problems</span>
+                </a>
+                <br>
+                <strong>Yiyu Wang</strong>,
+                <a>Yunxiang Yao</a>,
+                <a href="https://eggeek.github.io/">Shizhe Zhao</a>,
+                <a href="https://rap-lab.github.io/team/zren/">Zhongqiang Ren</a>
+                <br>
+                <em>IROS</em>, 2026
+                <br>
+                paper to be released /
+                <a href="https://pypi.org/project/PyRCH/">PyRCH (PyPI)</a>
+                <p></p>
+                <p>
+                  An anytime focal-search solver for min-max heterogeneous multi-robot routing under capacity,
+                  resource, and time-window constraints, implemented in C++ and released as the PyRCH Python package.
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:16px;width:25%;vertical-align:middle">
+                <img src="images/heha.png" class="papershot" alt="HEHA heterogeneous exploration">
+              </td>
+              <td style="padding:8px;width:75%;vertical-align:middle">
+                <a href="https://arxiv.org/abs/2510.04161">
+                  <span class="papertitle">HEHA: Bounded Suboptimal Planning for Constrained Routing and Its Use in Heterogeneous Multi-Robot Exploration of Unknown Environments</span>
+                </a>
+                <br>
+                <a>Longrui Yang</a><sup>&dagger;</sup>, <strong>Yiyu Wang</strong><sup>&dagger;</sup>,
+                <a href="https://tangjingfan.github.io/">Jingfan Tang</a><sup>&dagger;</sup>, <a>Yunpeng Lv</a>,
+                <a href="https://eggeek.github.io/">Shizhe Zhao</a>,
+                <a href="https://caochao.me">Chao Cao</a>,
+                <a href="https://rap-lab.github.io/team/zren/">Zhongqiang Ren</a>
+                <br>
+                <small><sup>&dagger;</sup> Equal contribution</small>
+                <br>
+                MRS Poster Paper, 2025
+                <br>
+                <em>In submission to T-RO</em>, 2026
+                <br>
+                <a href="https://arxiv.org/abs/2510.04161">paper</a> /
+                <a href="https://tangjingfan.github.io/demo/heha/">demo</a>
+                <p></p>
+                <p>
+                  Path planning for autonomous exploration of an unknown environment by drones, wheeled, and legged
+                  robots with different terrain-traversal capabilities. HEHA splits the problem into global routing,
+                  solved by a bounded-suboptimal anytime focal search that minimizes the makespan under traversability
+                  constraints, and a heterogeneity-aware local planner that avoids duplicated exploration.
+                </p>
+              </td>
+            </tr>
+
+          </tbody></table>
+
+          <!-- ===================== Miscellanea ===================== -->
+          <table style="width:100%;margin:0 auto;border:0;border-spacing:0;padding:16px;"><tbody>
+            <tr>
+              <td>
+                <h2>Miscellanea</h2>
+              </td>
+            </tr>
+          </tbody></table>
+
+          <table class="stack-table" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+
+            <tr>
+              <td align="center" style="padding:16px;width:20%;vertical-align:middle">
+                <div class="colored-box" style="background-color: #92bced;">
+                  <h2>Software</h2>
+                </div>
+              </td>
+              <td style="padding:8px;width:80%;vertical-align:middle">
+                <a href="https://pypi.org/project/PyRCH/">PyRCH</a> &mdash; a Python package wrapping our C++ anytime
+                focal-search solver for heterogeneous multi-agent routing.
+                <br>
+                <code>pip install PyRCH</code>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="center" style="padding:16px;width:20%;vertical-align:middle">
+                <div class="colored-box" style="background-color: #edd892;">
+                  <h2>Teaching</h2>
+                </div>
+              </td>
+              <td style="padding:8px;width:80%;vertical-align:middle">
+                Teaching Assistant, ME2110J (Introduction to Solid Mechanics), Shanghai Jiao Tong University.
+              </td>
+            </tr>
+
+            <tr>
+              <td align="center" style="padding:16px;width:20%;vertical-align:middle">
+                <div class="colored-box" style="background-color: #aaba9e;">
+                  <h2>Services</h2>
+                </div>
+              </td>
+              <td style="padding:8px;width:80%;vertical-align:middle">
+                Delegated reviewer, IEEE Robotics &amp; Automation Letters (RA-L).
+                <br>
+                Delegated reviewer, IROS.
+              </td>
+            </tr>
+
+          </tbody></table>
+
+          <!-- ===================== Footer ===================== -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+            <tr>
+              <td style="padding:0px">
+                <br>
+                <p style="text-align:right;font-size:small;">
+                  Thanks to <a href="https://jonbarron.info/">Jon Barron</a> for the
+                  <a href="https://github.com/jonbarron/jonbarron_website">website template</a>.
+                </p>
+              </td>
+            </tr>
+          </tbody></table>
+
+        </td>
+      </tr>
+    </tbody></table>
+  </body>
+</html>
