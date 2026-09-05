@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>PyRCH &mdash; heterogeneous multi-robot routing demo</title>
+    <meta name="author" content="Yiyu Wang">
+    <meta name="description" content="Interactive demo of PyRCH: min-max routing for a heterogeneous robot team — a drone, a wheeled robot and a legged robot sharing one field.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="../../images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="demo.css">
+  </head>
+
+  <body>
+    <div class="wrap">
+      <h1>Heterogeneous routing, one field, three robots</h1>
+      <p class="crumb"><a href="../../">Yiyu Wang</a> &rarr; PyRCH demo</p>
+
+      <p class="lede">
+        A drone, a wheeled robot and a legged robot leave the same depot and have to visit every target
+        between them. They are not interchangeable: the drone flies straight over the river and the rocks,
+        the wheeled robot is the fastest but has to take the bridge and cannot enter the rocks, and the
+        legged robot is slow but is the only ground robot that can walk into them.
+        <a href="https://pypi.org/project/PyRCH/">PyRCH</a> minimises the <em>makespan</em> &mdash; the time
+        the <em>last</em> robot gets home &mdash; so the plan balances travel time, not distance.
+        Roll a new map and watch the three of them run on one shared clock.
+      </p>
+
+      <div class="stage" id="stage">
+        <div class="mapcol">
+          <svg class="map" id="map" viewBox="0 0 100 100" role="img"
+               aria-label="Map of a field with a river, a bridge, rocky patches and robot routes"></svg>
+          <div class="controls">
+            <button class="btn" id="btn-seed" title="load another precomputed instance (r)">&#8635; new map</button>
+            <span class="seedtag" id="seedtag">&nbsp;</span>
+            <button class="btn" id="btn-play" title="play / pause (space)">&#9208; pause</button>
+            <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="scrub through the run">
+            <span class="clock" id="clock">t = 0 / 0</span>
+          </div>
+        </div>
+
+        <div class="railcol">
+          <div class="makespan">
+            <div class="num" id="makespan">&mdash;</div>
+            <div class="cap">makespan &mdash; when the last robot is home</div>
+          </div>
+
+          <div id="cards"></div>
+
+          <div class="controls" id="anytime">
+            <span class="seedtag">anytime:</span>
+            <button class="btn" id="btn-first">first plan</button>
+            <button class="btn" id="btn-best">best</button>
+          </div>
+
+          <p class="note-foot">
+            Hover a robot to isolate its route; hovering the wheeled robot also crosses out the targets it
+            is not allowed to serve. Notice how the three <em>time</em> bars end up nearly equal while the
+            <em>distance</em> bars do not &mdash; that gap is the heterogeneity.
+          </p>
+        </div>
+      </div>
+
+      <p class="note-foot">
+        Every plan on this page was produced offline by the real PyRCH solver
+        (<code>pip install PyRCH</code>) and shipped as JSON &mdash; this page only replays it. Costs are
+        travel times computed on a visibility graph per robot class, so min-max cost is exactly the fleet
+        makespan. The generator is
+        <a href="https://github.com/Ian-wyy/Ian-wyy.github.io/blob/master/tools/gen_pyrch_demo.py">tools/gen_pyrch_demo.py</a>.
+      </p>
+    </div>
+
+    <script src="demo.js"></script>
+  </body>
+</html>
