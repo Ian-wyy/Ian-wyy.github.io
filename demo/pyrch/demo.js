@@ -211,7 +211,7 @@ function buildRail() {
   const gain = d.first_solution.makespan - d.solution.makespan;
   $('anytime').style.display = gain > 0.05 ? '' : 'none';
   $('btn-first').textContent = `first plan \u00b7 ${d.first_solution.makespan.toFixed(0)} s`;
-  $('btn-best').textContent = `best \u00b7 ${d.solution.makespan.toFixed(0)} s`;
+  $('btn-best').textContent = `after ${d.stats.solve_time.toFixed(0)} s \u00b7 ${d.solution.makespan.toFixed(0)} s`;
   $('btn-first').classList.toggle('on', S.plan === 'first');
   $('btn-best').classList.toggle('on', S.plan === 'best');
 }
