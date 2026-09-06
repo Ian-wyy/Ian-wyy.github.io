@@ -4,3 +4,7 @@
 # Local preview / editor cruft
 .vscode/
 .DS_Store
+
+# Python bytecode from tools/
+__pycache__/
+*.pyc

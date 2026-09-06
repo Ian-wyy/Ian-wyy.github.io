@@ -81,6 +81,7 @@ function buildMap() {
   const gTerr = el('g', {}, svg);
   const gRoute = el('g', {}, svg);
   const gNode = el('g', {}, svg);
+  const gLabel = el('g', {}, svg);   // above the routes, below the robots
   const gAgent = el('g', {}, svg);
 
   const pat = el('pattern', { id: 'rockpat', width: 3, height: 3, patternUnits: 'userSpaceOnUse' }, el('defs', {}, svg));
@@ -94,8 +95,12 @@ function buildMap() {
   for (const w of d.terrain.river) el('polygon', { points: poly(w), class: 'terr-water' }, gTerr);
   el('line', { x1: b[0][0], y1: fy(b[0][1]), x2: b[3][0], y2: fy(b[3][1]), class: 'bridge-rail' }, gTerr);
   el('line', { x1: b[1][0], y1: fy(b[1][1]), x2: b[2][0], y2: fy(b[2][1]), class: 'bridge-rail' }, gTerr);
-  const bl = el('text', { x: (b[0][0] + b[1][0]) / 2, y: fy((b[0][1] + b[2][1]) / 2) - 5.2, class: 'terrlabel', 'text-anchor': 'middle' }, gTerr);
-  bl.textContent = 'BRIDGE';
+  const blx = Math.min(b[0][0], b[3][0]) - 2;
+  const bly = (b[0][1] + b[2][1]) / 2;
+  if (Math.hypot(blx - d.depot[0], bly - d.depot[1]) > 14) {  // don't collide with DEPOT
+    el('text', { x: blx, y: fy(bly) + 1, class: 'terrlabel', 'text-anchor': 'end' }, gLabel)
+      .textContent = 'BRIDGE';
+  }
 
   // routes (ghost = whole plan, done = travelled so far)
   S.routes = [];
@@ -122,7 +127,7 @@ function buildMap() {
   // depot + targets
   const [dx, dy] = d.depot;
   el('path', { d: star(dx, fy(dy), 3.1), fill: '#222' }, gNode);
-  const dl = el('text', { x: dx, y: fy(dy) + 5.4, class: 'terrlabel', 'text-anchor': 'middle' }, gNode);
+  const dl = el('text', { x: dx, y: fy(dy) + 5.4, class: 'terrlabel', 'text-anchor': 'middle' }, gLabel);
   dl.textContent = 'DEPOT';
 
   S.marks = {};
@@ -131,7 +136,8 @@ function buildMap() {
     const m = t.rock
       ? el('path', { d: `M${x} ${y - 1.9} L${x + 1.75} ${y + 1.3} L${x - 1.75} ${y + 1.3} Z`, class: 'tgt' }, gNode)
       : el('circle', { cx: x, cy: y, r: 1.6, class: 'tgt' }, gNode);
-    const x1 = el('path', { d: `M${x - 1.5} ${y - 1.5} L${x + 1.5} ${y + 1.5} M${x + 1.5} ${y - 1.5} L${x - 1.5} ${y + 1.5}`, class: 'maskx', opacity: 0 }, gNode);
+    const x1 = el('path', { d: `M${x - 1.5} ${y - 1.5} L${x + 1.5} ${y + 1.5} M${x + 1.5} ${y - 1.5} L${x - 1.5} ${y + 1.5}`, class: 'maskx' }, gNode);
+    x1.style.opacity = 0;
     S.marks[t.id] = { m, x1, rock: t.rock };
   }
 }
@@ -183,7 +189,7 @@ function buildRail() {
     card.innerHTML =
       `<div class="hd"><span class="ico"></span><span class="nm" style="color:${COLOR[r.cls]}">` +
       `${d.agents.find((a) => a.cls === r.cls).label}</span>` +
-      `<span class="sp">speed ${r.speed ?? d.agents.find((a) => a.cls === r.cls).speed}&times;</span></div>` +
+      `<span class="sp">${rel(d, r.cls)}&times; speed</span></div>` +
       `<div class="note">${NOTE[r.cls]}</div>` +
       `<div class="bar${isMax ? ' is-max' : ''}"><span class="lab">time</span><span class="track">` +
       `<span class="fill" style="background:${COLOR[r.cls]};width:${(100 * r.time) / sol.makespan}%"></span></span>` +
@@ -209,6 +215,12 @@ function buildRail() {
   $('btn-best').classList.toggle('on', S.plan === 'best');
 }
 
+function rel(d, cls) {
+  const slowest = Math.min(...d.agents.map((a) => a.speed));
+  const k = d.agents.find((a) => a.cls === cls).speed / slowest;
+  return k < 1.005 ? '1' : k.toFixed(1);
+}
+
 function setFocus(cls) {
   S.focus = cls;
   for (const g of document.querySelectorAll('.route-layer, .agent-layer')) {
@@ -221,7 +233,7 @@ function setFocus(cls) {
   for (const id in S.marks) {
     const mk = S.marks[id];
     const blocked = cls === 'wheeled' && mk.rock;
-    mk.x1.setAttribute('opacity', blocked ? 1 : 0);
+    mk.x1.style.opacity = blocked ? 1 : 0;
     mk.m.classList.toggle('masked', blocked);
   }
 }
@@ -269,7 +281,7 @@ function draw() {
   }
   for (const id in S.marks) {
     const c = served[id];
-    S.marks[id].m.setAttribute('fill', c ? COLOR[c] : '#fff');
+    S.marks[id].m.style.fill = c ? COLOR[c] : '#fff';
     S.marks[id].m.classList.toggle('served', !!c);
   }
   $('clock').textContent = `t = ${S.t.toFixed(0)} / ${T.toFixed(0)}`;
@@ -287,10 +299,21 @@ async function load(seed) {
   S.t = 0;
   buildMap();
   buildRail();
-  setFocus(null);
+  const q = new URLSearchParams(location.search);
+  setFocus(COLOR[q.get('focus')] ? q.get('focus') : null);
   $('seedtag').textContent = `seed ${seed}`;
+
+  // ?at=<0..1> freezes the replay at a fraction of the makespan and ?focus=<cls>
+  // isolates one robot -- handy for deep links and for screenshots, since
+  // headless virtual time barely advances rAF. Read before replaceState drops them.
+  const at = Number(q.get('at'));
   history.replaceState(null, '', `?seed=${seed}`);
-  play();
+  if (at > 0 && at <= 1) {
+    S.t = at * horizon();
+    pause();
+  } else {
+    play();
+  }
 }
 
 function play() {
@@ -326,7 +349,7 @@ async function main() {
     while (S.seeds.length > 1 && next === (S.data ? S.data.seed : -1)) {
       next = S.seeds[Math.floor(Math.random() * S.seeds.length)];
     }
-    load(next);
+    load(next).catch(() => {});
   });
   $('btn-play').addEventListener('click', () => (S.playing ? pause() : play()));
   $('scrub').addEventListener('input', (e) => {
@@ -349,7 +372,7 @@ async function main() {
     if (e.key.toLowerCase() === 'r') $('btn-seed').click();
   });
 
-  await load(seed);
+  await load(seed).catch(() => load(S.seeds[0]));
   requestAnimationFrame(tick);
 }
 

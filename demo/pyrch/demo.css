@@ -80,15 +80,35 @@ body {
 .tgt { stroke: #7d7d7d; stroke-width: .45; fill: #fff; transition: fill .18s ease, stroke .18s ease; }
 .tgt.served { stroke: #fff; stroke-width: .5; }
 .tgt.masked { stroke: #c33; stroke-dasharray: .9 .7; }
-.maskx { stroke: #c33; stroke-width: .55; opacity: .8; }
+.maskx { stroke: #c33; stroke-width: .55; pointer-events: none; }
 
 .terr-water { fill: #cfe4f4; stroke: #a7cce6; stroke-width: .4; }
 .terr-rock  { stroke: #cabca0; stroke-width: .4; }
 .terr-bridge { fill: #e8dcc2; stroke: #bda87e; stroke-width: .35; }
 .bridge-rail { stroke: #bda87e; stroke-width: .45; }
-.terrlabel { font-size: 2.6px; fill: #9a9a9a; letter-spacing: .3px; }
+.terrlabel {
+  font-size: 2.6px;
+  fill: #9a9a9a;
+  letter-spacing: .3px;
+  stroke: #fff;            /* halo, so a route crossing the label stays legible */
+  stroke-width: .9;
+  paint-order: stroke;
+  stroke-linejoin: round;
+}
 
 /* ── controls ─────────────────────────────────────────── */
+
+.mapkey {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 9px 2px 0;
+  line-height: 1.6;
+}
+
+.mapkey .glyph {
+  color: #444;
+  font-size: 13px;
+}
 
 .controls {
   display: flex;
@@ -207,6 +227,7 @@ input[type="range"] {
 }
 
 .bar .fill {
+  display: block;          /* a bare inline span ignores width/height */
   height: 100%;
   width: 0;
   border-radius: 3px;

@@ -11,6 +11,8 @@ No build step: `.nojekyll` tells GitHub Pages to publish the files as-is.
 index.html        the whole site
 stylesheet.css    Lato webfont + the template's styles + a small responsive block
 images/           profile photo, paper thumbnails, favicons
+demo/pyrch/       interactive PyRCH routing demo (page + precomputed instances)
+tools/            offline scripts that produce what the demo replays
 ```
 
 ## Editing
@@ -24,6 +26,26 @@ Open `index.html` and edit the section you want; the comments mark them off
 - **Publications.** One `<tr>` per paper: thumbnail on the left
   (`class="papershot"`), title / authors / venue / links / summary on the right.
 
+
+## The PyRCH demo
+
+`demo/pyrch/` shows a drone, a wheeled robot and a legged robot splitting one
+field between them. GitHub Pages is static, so the C++ solver cannot run in the
+browser: `tools/gen_pyrch_demo.py` builds random instances, solves each with the
+real solver, and writes `demo/pyrch/data/NNNN.json`; the page only replays them.
+
+Regenerate the instances (needs a C++17 compiler and CMake to build PyRCH):
+
+```bash
+uv venv && . .venv/bin/activate
+uv pip install PyRCH
+python tools/gen_pyrch_demo.py --count 90 --time-limit 4
+```
+
+Instances where a robot ends up idle or the fleet is badly unbalanced are
+skipped, so the seed you roll always shows the point. Useful query parameters:
+`?seed=42` pins an instance, `&at=0.6` freezes the replay partway through, and
+`&focus=wheeled` isolates one robot.
 
 ## Previewing locally
 

@@ -125,8 +125,29 @@ def signed_area(poly: Poly) -> float:
     return s / 2
 
 
-def offset_vertices(poly: Poly, eps: float = 0.9) -> List[Pt]:
-    """Polygon corners pushed slightly outward, used as visibility-graph nodes."""
+MARGIN = 1.7  # obstacles are inflated by this much before planning
+
+
+def convex_hull(pts: Sequence[Pt]) -> Poly:
+    """Monotone chain hull. Convex rocks keep the chord between two adjacent
+    graph nodes from grazing a vertex that pokes out between them."""
+    p = sorted(set(pts))
+    if len(p) < 3:
+        return list(p)
+
+    def half(seq):
+        out: List[Pt] = []
+        for q in seq:
+            while len(out) >= 2 and _orient(out[-2], out[-1], q) <= 0:
+                out.pop()
+            out.append(q)
+        return out[:-1]
+
+    return half(p) + half(p[::-1])
+
+
+def offset_vertices(poly: Poly, eps: float = 0.5) -> List[Pt]:
+    """Polygon corners pushed outward, used as visibility-graph nodes."""
     p = poly if signed_area(poly) > 0 else poly[::-1]  # make CCW
     n = len(p)
     out: List[Pt] = []
@@ -225,12 +246,15 @@ def make_river(rng: random.Random) -> Tuple[List[Poly], Poly, List[Pt], float]:
         return left + right[::-1]
 
     polys = [band(center[: lo + 1]), band(center[hi:])]
-    bx = cx + amp * math.sin(freq * by + phase)
+    # the bridge is decoration, but it has to land exactly on the gap: build it
+    # from the two river ends instead of from the centreline sampled at ``by``
+    (xlo, ylo), (xhi, yhi) = center[lo], center[hi]
+    pad = 1.4
     bridge = [
-        (bx - hw - 1.5, center[lo][1]),
-        (bx + hw + 1.5, center[lo][1]),
-        (bx + hw + 1.5, center[hi][1]),
-        (bx - hw - 1.5, center[hi][1]),
+        (xlo - hw - pad, ylo),
+        (xlo + hw + pad, ylo),
+        (xhi + hw + pad, yhi),
+        (xhi - hw - pad, yhi),
     ]
     return polys, bridge, center, hw
 
@@ -255,7 +279,7 @@ def make_rocks(rng: random.Random, river: List[Poly]) -> List[Poly]:
             a = 2 * math.pi * i / k + rng.uniform(-0.12, 0.12)
             rr = r * rng.uniform(0.78, 1.18)
             poly.append((cxr + rr * math.cos(a), cyr + rr * math.sin(a)))
-        rocks.append(poly)
+        rocks.append(convex_hull(poly))
     return rocks
 
 
@@ -353,7 +377,14 @@ def solve_instance(inst: Dict, time_limit: float) -> Dict:
     river: List[Poly] = inst["river"]
     rocks: List[Poly] = inst["rocks"]
 
-    obstacles = {"drone": [], "legged": river, "wheeled": river + rocks}
+    # Plan against inflated obstacles. A visibility graph routes a path exactly
+    # through the corners it bends around, so planning on the true polygon makes
+    # detours graze the boundary -- legal, but it reads as cutting straight
+    # through the rocks at the demo's stroke width.
+    grown = {id(q): offset_vertices(q, MARGIN) for q in river + rocks}
+    infl_river = [grown[id(q)] for q in river]
+    infl_rocks = [grown[id(q)] for q in rocks]
+    obstacles = {"drone": [], "legged": infl_river, "wheeled": infl_river + infl_rocks}
     graphs: Dict[str, VisGraph] = {}
     prevs: Dict[str, List[List[int]]] = {}
     costs: Dict[str, List[List[float]]] = {}
@@ -371,6 +402,13 @@ def solve_instance(inst: Dict, time_limit: float) -> Dict:
                 blocked = cls == "wheeled" and (zones[i] == 1 or zones[j] == 1)
                 m[i][j] = BIG if (blocked or math.isinf(d)) else d / spd
         costs[cls] = m
+
+    for cls, _, _ in CLASSES:
+        for i in range(1, n):
+            if cls == "wheeled" and zones[i] == 1:
+                continue  # a rock target is off limits to the wheeled robot anyway
+            if costs[cls][0][i] >= BIG:
+                return {"status": "unreachable", "cls": cls, "node": i}
 
     planner = pyrch.Planner()
     planner.add_depot(0, x=pts[0][0], y=pts[0][1])
@@ -494,12 +532,25 @@ def main() -> None:
     for seed in range(args.start, args.start + args.count):
         inst = build_instance(seed)
         sol = solve_instance(inst, args.time_limit)
+        if sol["status"] == "unreachable":
+            print(f"seed {seed}: node {sol['node']} unreachable for {sol['cls']}, skipped")
+            continue
         if sol["status"] != "success":
             print(f"seed {seed}: FAILED, skipped")
             continue
         payload = instance_json(seed, inst, sol)
         rts = payload["solution"]["routes"]
         ms = payload["solution"]["makespan"]
+        # Result.times occasionally has no entry for an agent that Result.paths
+        # gave a route to, which silently drops that robot from the min-max
+        # objective. Don't ship a plan whose own cost we cannot reproduce.
+        drift = max(
+            abs(r["time"] - r["solver_time"])
+            for r in payload["solution"]["routes"] + payload["first_solution"]["routes"]
+        )
+        if drift > 0.05:
+            print(f"seed {seed}: solver cost disagrees with geometry by {drift:.2f}, skipped")
+            continue
         if min(len(r["path"]) - 2 for r in rts) < args.min_stops:
             print(f"seed {seed}: a robot is idle, skipped")
             continue
