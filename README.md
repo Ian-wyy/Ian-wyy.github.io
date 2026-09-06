@@ -48,6 +48,10 @@ python tools/gen_pyrch_demo.py --count 65 --time-limit 4
 ```
 
 That keeps roughly 60; trim to 50 and rewrite `data/manifest.json` to match.
+
+After editing `demo.css` or `demo.js`, run `python tools/stamp_assets.py`: it
+hashes each file into its `?v=` query string, so a deploy cannot leave a
+browser running the previous version out of cache.
 Instances are skipped when a robot ends up idle, the fleet is badly unbalanced,
 or the solver's own cost disagrees with the route geometry, so whatever a
 visitor types always shows the point. Useful query parameters: `?seed=1234`
