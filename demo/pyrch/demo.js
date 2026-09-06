@@ -67,8 +67,8 @@ function icon(cls, color) {
 function legendIcon(cls) {
   const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('viewBox', '-6 -6 12 12');
-  svg.setAttribute('width', '24');
-  svg.setAttribute('height', '24');
+  svg.setAttribute('width', '28');
+  svg.setAttribute('height', '28');
   svg.appendChild(icon(cls, COLOR[cls]));
   return svg;
 }
@@ -308,19 +308,23 @@ function draw() {
 
 /* ── instance loading ── */
 
-// The visitor types any number; it is hashed onto one of the shipped
-// instances. Which file that is stays an implementation detail.
+// The visitor types any number; it maps onto one of the shipped instances.
+// Which file that is stays an implementation detail.
 function pick(seed) {
-  let h = seed >>> 0;
-  h = Math.imul(h ^ (h >>> 16), 2246822507);
-  h = Math.imul(h ^ (h >>> 13), 3266489909);
-  h = (h ^ (h >>> 16)) >>> 0;
-  return S.seeds[h % S.seeds.length];
+  const n = S.seeds.length;
+  return S.seeds[((seed % n) + n) % n];
 }
 
-async function load(seed) {
-  const res = await fetch(`data/${String(pick(seed)).padStart(4, '0')}.json`, { cache: 'force-cache' });
-  if (!res.ok) throw new Error(`instance for seed ${seed} not found`);
+async function load(seed, tries = 0) {
+  const id = pick(seed);
+  const res = await fetch(`data/${String(id).padStart(4, '0')}.json`);
+  if (!res.ok) {
+    // a listing left over from an older build can name an instance that is no
+    // longer shipped -- forget it and try the next one rather than dying here
+    S.seeds = S.seeds.filter((v) => v !== id);
+    if (S.seeds.length && tries < 5) return load(seed, tries + 1);
+    throw new Error('no instances available');
+  }
   S.data = await res.json();
   S.plan = 'best';
   S.t = 0;
@@ -359,7 +363,7 @@ function pause() {
 async function main() {
   let manifest;
   try {
-    manifest = await (await fetch('data/manifest.json', { cache: 'force-cache' })).json();
+    manifest = await (await fetch('data/manifest.json', { cache: 'no-cache' })).json();
   } catch (e) {
     $('stage').innerHTML =
       '<div class="err">Could not load the precomputed instances. ' +
@@ -410,8 +414,10 @@ async function main() {
     if (e.key.toLowerCase() === 'r') $('btn-seed').click();
   });
 
-  await load(seed).catch(() => load(0));
   requestAnimationFrame(tick);
+  await load(seed).catch(() => load(0)).catch(() => {
+    $('stage').innerHTML = '<div class="err">Could not load any instance.</div>';
+  });
 }
 
 main();

@@ -14,19 +14,19 @@ body {
 }
 
 .wrap {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  padding: 28px 20px 56px;
 }
 
 .wrap h1 {
-  margin: 0 0 2px;
-  font-size: 28px;
+  margin: 0 0 3px;
+  font-size: 32px;
   font-weight: 400;
 }
 
 .crumb {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
   margin: 0 0 18px;
 }
@@ -45,13 +45,13 @@ body {
 }
 
 .railcol {
-  flex: 0 0 300px;
-  max-width: 300px;
+  flex: 0 0 340px;
+  max-width: 340px;
 }
 
 @media (max-width: 720px) {
   .stage { display: block; }
-  .railcol { max-width: none; margin-top: 18px; }
+  .railcol { max-width: none; margin-top: 20px; }
 }
 
 /* ── map ──────────────────────────────────────────────── */
@@ -82,7 +82,7 @@ body {
 .terr-bridge { fill: #e8dcc2; stroke: #bda87e; stroke-width: .35; }
 .bridge-rail { stroke: #bda87e; stroke-width: .45; }
 .terrlabel {
-  font-size: 2.6px;
+  font-size: 3.1px;
   fill: #9a9a9a;
   letter-spacing: .3px;
   stroke: #fff;            /* halo, so a route crossing the label stays legible */
@@ -94,7 +94,7 @@ body {
 /* ── controls ─────────────────────────────────────────── */
 
 .mapkey {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   margin: 9px 2px 0;
   line-height: 1.6;
@@ -102,7 +102,7 @@ body {
 
 .mapkey .glyph {
   color: #444;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .chart-hd + .controls {
@@ -119,12 +119,12 @@ body {
 
 button.btn {
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
   color: #1772d0;
   background: #fff;
   border: 1px solid var(--rule);
   border-radius: 4px;
-  padding: 5px 11px;
+  padding: 6px 12px;
   cursor: pointer;
 }
 
@@ -132,20 +132,20 @@ button.btn:hover { color: #f09228; border-color: #d8d8d8; }
 button.btn.on { background: #f4f8fd; border-color: #bcd8f2; }
 
 .seedtag {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
 .seedbox {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
 }
 
 .seedbox input {
   font: inherit;
-  font-size: 13px;
-  width: 68px;
+  font-size: 14px;
+  width: 78px;
   margin-left: 4px;
   padding: 4px 6px;
   border: 1px solid var(--rule);
@@ -166,10 +166,10 @@ input[type="range"] {
 }
 
 .clock {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
-  min-width: 92px;
+  min-width: 104px;
   text-align: right;
 }
 
@@ -183,13 +183,13 @@ input[type="range"] {
 }
 
 .makespan .num {
-  font-size: 26px;
+  font-size: 32px;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
 
 .makespan .cap {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 
@@ -198,7 +198,7 @@ input[type="range"] {
 }
 
 .chart-hd {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   margin-bottom: 5px;
   display: flex;
@@ -208,16 +208,16 @@ input[type="range"] {
 
 .chart-hd b {
   color: var(--ink);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
 
 .crow {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  margin-top: 4px;
+  gap: 8px;
+  font-size: 14px;
+  margin-top: 5px;
   cursor: pointer;
   transition: opacity .15s ease;
 }
@@ -227,13 +227,13 @@ input[type="range"] {
 }
 
 .crow .nm {
-  flex: 0 0 54px;
+  flex: 0 0 62px;
   font-weight: 700;
 }
 
 .crow .track {
   flex: 1 1 auto;
-  height: 9px;
+  height: 10px;
   background: #f1f1f1;
   border-radius: 3px;
   overflow: hidden;
@@ -248,7 +248,7 @@ input[type="range"] {
 }
 
 .crow .val {
-  flex: 0 0 34px;
+  flex: 0 0 46px;
   text-align: right;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
@@ -278,17 +278,17 @@ input[type="range"] {
 
 .card .hd svg { flex: 0 0 auto; }
 
-.card .nm { font-weight: 700; }
+.card .nm { font-weight: 700; font-size: 15px; }
 
 .card .sp {
   margin-left: auto;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
 .card .note {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   margin: 4px 0 7px;
   line-height: 1.35;
@@ -330,7 +330,7 @@ input[type="range"] {
 .bar.is-max .val { color: var(--ink); font-weight: 700; }
 
 .note-foot {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.5;
   margin-top: 18px;
@@ -342,6 +342,6 @@ input[type="range"] {
   border: 1px solid #e3c9c9;
   background: #fdf6f6;
   border-radius: 4px;
-  padding: 12px;
-  font-size: 13px;
+  padding: 14px;
+  font-size: 14px;
 }
