@@ -275,7 +275,7 @@ input[type="range"] {
   padding: 9px 11px 10px;
   margin-bottom: 9px;
   cursor: pointer;
-  transition: border-color .15s ease, background .15s ease;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
 }
 
 .card:hover { border-color: #cfcfcf; background: #fcfcfc; }

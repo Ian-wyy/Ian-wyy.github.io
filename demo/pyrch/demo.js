@@ -20,7 +20,8 @@ const S = {
   plan: 'best',      // 'best' | 'first'
   t: 0,              // clock, in solver time units
   playing: false,
-  focus: null,
+  focus: null,       // what is highlighted right now
+  pinned: null,      // ... and whether a click is holding it there
   last: 0,
   routes: [],
 };
@@ -202,8 +203,9 @@ function buildRail() {
       `${r.path.length - 2} stops</span></div>` +
       `<div class="note">${NOTE[r.cls]}</div>`;
     card.querySelector('.ico').appendChild(legendIcon(r.cls));
-    card.addEventListener('mouseenter', () => setFocus(r.cls));
-    card.addEventListener('mouseleave', () => setFocus(null));
+    card.addEventListener('mouseenter', () => hover(r.cls));
+    card.addEventListener('mouseleave', () => hover(null));
+    card.addEventListener('click', () => pin(r.cls));
     rail.appendChild(card);
   }
 
@@ -233,10 +235,22 @@ function chart(id, title, routes, value, label) {
       `<span class="nm" style="color:${COLOR[r.cls]}">${label(r.cls)}</span>` +
       `<span class="track"><span class="fill" style="background:${COLOR[r.cls]};width:${(100 * v) / top}%"></span></span>` +
       `<span class="val">${v.toFixed(0)}</span>`;
-    row.addEventListener('mouseenter', () => setFocus(r.cls));
-    row.addEventListener('mouseleave', () => setFocus(null));
+    row.addEventListener('mouseenter', () => hover(r.cls));
+    row.addEventListener('mouseleave', () => hover(null));
+    row.addEventListener('click', () => pin(r.cls));
     box.appendChild(row);
   }
+}
+
+// Hovering previews one robot; clicking holds it, so you can scrub the clock
+// with a single route on screen. Clicking the same robot again releases it.
+function hover(cls) {
+  setFocus(cls === null ? S.pinned : cls);  // leaving falls back to the pin
+}
+
+function pin(cls) {
+  S.pinned = S.pinned === cls ? null : cls;
+  setFocus(S.pinned);
 }
 
 function setFocus(cls) {
@@ -245,7 +259,10 @@ function setFocus(cls) {
     g.classList.toggle('dimmed', !!cls && g.dataset.cls !== cls);
   }
   for (const c of document.querySelectorAll('.card')) {
-    c.style.borderColor = cls && c.dataset.cls === cls ? COLOR[cls] : '';
+    const own = c.dataset.cls;
+    c.style.borderColor = cls === own ? COLOR[own] : '';
+    // the pin marker stays put while another robot is being previewed
+    c.style.boxShadow = S.pinned === own ? `inset 3px 0 0 ${COLOR[own]}` : '';
   }
   for (const row of document.querySelectorAll('.crow')) {
     row.classList.toggle('dim', !!cls && row.dataset.cls !== cls);
@@ -331,7 +348,8 @@ async function load(seed, tries = 0) {
   buildMap();
   buildRail();
   const q = new URLSearchParams(location.search);
-  setFocus(COLOR[q.get('focus')] ? q.get('focus') : null);
+  if (S.pinned === null && COLOR[q.get('focus')]) S.pinned = q.get('focus');
+  setFocus(S.pinned);
   S.seed = seed;
   $('seed-input').value = seed;
 
@@ -405,13 +423,14 @@ async function main() {
       S.t = 0;
       buildMap();
       buildRail();
-      setFocus(S.focus);
+      setFocus(S.pinned);
       play();
     });
   }
   document.addEventListener('keydown', (e) => {
     if (e.key === ' ') { e.preventDefault(); S.playing ? pause() : play(); }
     if (e.key.toLowerCase() === 'r') $('btn-seed').click();
+    if (e.key === 'Escape' && S.pinned !== null) pin(S.pinned);
   });
 
   requestAnimationFrame(tick);
