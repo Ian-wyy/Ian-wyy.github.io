@@ -12,9 +12,11 @@ const NOTE = {
   legged: 'Slow, yet it is the only ground robot that can walk into the rocks.',
 };
 
+const RATE = 20;      // wall-clock speed-up of the replay
 const S = {
   data: null,
   seeds: [],
+  seed: null,         // the seed the visitor typed, not the instance's own
   plan: 'best',      // 'best' | 'first'
   t: 0,              // clock, in solver time units
   playing: false,
@@ -121,7 +123,9 @@ function buildMap() {
     ag.appendChild(icon(r.cls, COLOR[r.cls]));
 
     const speed = d.agents.find((a) => a.cls === r.cls).speed;
-    S.routes.push({ ...r, pts, cum: cumulative(pts), done, L, group: g, agent: ag, speed });
+    // the clock runs in seconds while the polyline is in layout units
+    S.routes.push({ ...r, pts, cum: cumulative(pts), done, L, group: g, agent: ag,
+                    upers: speed / d.scale });
   }
 
   // depot + targets
@@ -176,49 +180,65 @@ function at(r, dist) {
 
 function buildRail() {
   const d = S.data;
+  const sol = S.plan === 'best' ? d.solution : d.first_solution;
+  const label = (cls) => d.agents.find((a) => a.cls === cls).label;
+
+  // Time and distance are different quantities on different scales, so they get
+  // one grouped chart each. Stacking them per robot invited the reader to
+  // compare a time bar against a distance bar, which means nothing.
+  chart('chart-time', 'travel time (s)', 'all three finish together', sol.routes,
+        (r) => r.time, (r) => COLOR[r.cls], label);
+  chart('chart-dist', 'distance covered (m)', 'nothing like equal', sol.routes,
+        (r) => r.length, () => '#b9b9b9', label);
+
   const rail = $('cards');
   rail.textContent = '';
-  const sol = S.plan === 'best' ? d.solution : d.first_solution;
-  const maxLen = Math.max(...sol.routes.map((r) => r.length));
-
   for (const r of sol.routes) {
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.cls = r.cls;
-    const isMax = Math.abs(r.time - sol.makespan) < 1e-6;
     card.innerHTML =
-      `<div class="hd"><span class="ico"></span><span class="nm" style="color:${COLOR[r.cls]}">` +
-      `${d.agents.find((a) => a.cls === r.cls).label}</span>` +
-      `<span class="sp">${rel(d, r.cls)}&times; speed</span></div>` +
-      `<div class="note">${NOTE[r.cls]}</div>` +
-      `<div class="bar${isMax ? ' is-max' : ''}"><span class="lab">time</span><span class="track">` +
-      `<span class="fill" style="background:${COLOR[r.cls]};width:${(100 * r.time) / sol.makespan}%"></span></span>` +
-      `<span class="val">${r.time.toFixed(0)}</span></div>` +
-      `<div class="bar"><span class="lab">distance</span><span class="track">` +
-      `<span class="fill" style="background:#c9c9c9;width:${(100 * r.length) / maxLen}%"></span></span>` +
-      `<span class="val">${r.length.toFixed(0)}</span></div>` +
-      `<div class="bar"><span class="lab">stops</span><span class="track">` +
-      `<span class="fill" style="background:#e8e8e8;width:${(100 * (r.path.length - 2)) / d.targets.length}%"></span></span>` +
-      `<span class="val">${r.path.length - 2}</span></div>`;
+      `<div class="hd"><span class="ico"></span>` +
+      `<span class="nm" style="color:${COLOR[r.cls]}">${label(r.cls)}</span>` +
+      `<span class="sp">${d.agents.find((a) => a.cls === r.cls).speed} m/s &middot; ` +
+      `${r.path.length - 2} stops</span></div>` +
+      `<div class="note">${NOTE[r.cls]}</div>`;
     card.querySelector('.ico').appendChild(legendIcon(r.cls));
     card.addEventListener('mouseenter', () => setFocus(r.cls));
     card.addEventListener('mouseleave', () => setFocus(null));
     rail.appendChild(card);
   }
 
-  $('makespan').textContent = sol.makespan.toFixed(1);
+  $('makespan').textContent = `${sol.makespan.toFixed(0)} s`;
   const gain = d.first_solution.makespan - d.solution.makespan;
   $('anytime').style.display = gain > 0.05 ? '' : 'none';
-  $('btn-first').textContent = `first plan · ${d.first_solution.makespan.toFixed(0)}`;
-  $('btn-best').textContent = `after ${d.stats.solve_time.toFixed(0)}s · ${d.solution.makespan.toFixed(0)}`;
+  $('btn-first').textContent = `first plan \u00b7 ${d.first_solution.makespan.toFixed(0)} s`;
+  $('btn-best').textContent = `best \u00b7 ${d.solution.makespan.toFixed(0)} s`;
   $('btn-first').classList.toggle('on', S.plan === 'first');
   $('btn-best').classList.toggle('on', S.plan === 'best');
 }
 
-function rel(d, cls) {
-  const slowest = Math.min(...d.agents.map((a) => a.speed));
-  const k = d.agents.find((a) => a.cls === cls).speed / slowest;
-  return k < 1.005 ? '1' : k.toFixed(1);
+function chart(id, title, caption, routes, value, color, label) {
+  const box = $(id);
+  box.textContent = '';
+  const top = Math.max(...routes.map(value));
+  const hd = document.createElement('div');
+  hd.className = 'chart-hd';
+  hd.innerHTML = `<b>${title}</b> &mdash; ${caption}`;
+  box.appendChild(hd);
+  for (const r of routes) {
+    const v = value(r);
+    const row = document.createElement('div');
+    row.className = 'crow' + (v >= top - 1e-6 ? ' is-max' : '');
+    row.dataset.cls = r.cls;
+    row.innerHTML =
+      `<span class="nm" style="color:${COLOR[r.cls]}">${label(r.cls)}</span>` +
+      `<span class="track"><span class="fill" style="background:${color(r)};width:${(100 * v) / top}%"></span></span>` +
+      `<span class="val">${v.toFixed(0)}</span>`;
+    row.addEventListener('mouseenter', () => setFocus(r.cls));
+    row.addEventListener('mouseleave', () => setFocus(null));
+    box.appendChild(row);
+  }
 }
 
 function setFocus(cls) {
@@ -228,6 +248,9 @@ function setFocus(cls) {
   }
   for (const c of document.querySelectorAll('.card')) {
     c.style.borderColor = cls && c.dataset.cls === cls ? COLOR[cls] : '';
+  }
+  for (const row of document.querySelectorAll('.crow')) {
+    row.classList.toggle('dim', !!cls && row.dataset.cls !== cls);
   }
   // reveal what the focused robot is not allowed to serve
   for (const id in S.marks) {
@@ -240,14 +263,10 @@ function setFocus(cls) {
 
 /* ── animation ── */
 
-function duration() {
-  return 9.5; // seconds of wall clock for one full replay
-}
-
 function tick(ts) {
   if (S.playing) {
     const dt = S.last ? (ts - S.last) / 1000 : 0;
-    S.t += (dt * horizon()) / duration();
+    S.t += dt * RATE;
     if (S.t >= horizon()) {
       S.t = horizon();
       S.playing = false;
@@ -269,14 +288,14 @@ function draw() {
   const T = horizon();
   const served = {};
   for (const r of S.routes) {
-    const travelled = Math.min(S.t * r.speed, r.cum[r.cum.length - 1]);
+    const travelled = Math.min(S.t * r.upers, r.cum[r.cum.length - 1]);
     const p = at(r, travelled);
     const flip = p.dx < 0 ? -1 : 1;
     r.agent.setAttribute('transform', `translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) scale(${0.55 * flip} 0.55)`);
     const frac = travelled / (r.cum[r.cum.length - 1] || 1);
     r.done.setAttribute('stroke-dashoffset', (r.L * (1 - frac)).toFixed(2));
     for (let k = 1; k < r.path.length - 1; k++) {
-      if (r.stops[k] <= travelled + 1e-6) served[r.path[k]] = r.cls;
+      if (r.arrive[k] <= S.t + 1e-6) served[r.path[k]] = r.cls;
     }
   }
   for (const id in S.marks) {
@@ -284,16 +303,26 @@ function draw() {
     S.marks[id].m.style.fill = c ? COLOR[c] : '#fff';
     S.marks[id].m.classList.toggle('served', !!c);
   }
-  $('clock').textContent = `t = ${S.t.toFixed(0)} / ${T.toFixed(0)}`;
+  $('clock').textContent = `${S.t.toFixed(0)} / ${T.toFixed(0)} s`;
   const sc = $('scrub');
   if (document.activeElement !== sc) sc.value = String(Math.round((1000 * S.t) / T));
 }
 
 /* ── instance loading ── */
 
+// The visitor types any number; it is hashed onto one of the shipped
+// instances. Which file that is stays an implementation detail.
+function pick(seed) {
+  let h = seed >>> 0;
+  h = Math.imul(h ^ (h >>> 16), 2246822507);
+  h = Math.imul(h ^ (h >>> 13), 3266489909);
+  h = (h ^ (h >>> 16)) >>> 0;
+  return S.seeds[h % S.seeds.length];
+}
+
 async function load(seed) {
-  const res = await fetch(`data/${String(seed).padStart(4, '0')}.json`, { cache: 'force-cache' });
-  if (!res.ok) throw new Error(`instance ${seed} not found`);
+  const res = await fetch(`data/${String(pick(seed)).padStart(4, '0')}.json`, { cache: 'force-cache' });
+  if (!res.ok) throw new Error(`instance for seed ${seed} not found`);
   S.data = await res.json();
   S.plan = 'best';
   S.t = 0;
@@ -301,7 +330,8 @@ async function load(seed) {
   buildRail();
   const q = new URLSearchParams(location.search);
   setFocus(COLOR[q.get('focus')] ? q.get('focus') : null);
-  $('seedtag').textContent = `seed ${seed}`;
+  S.seed = seed;
+  $('seed-input').value = seed;
 
   // ?at=<0..1> freezes the replay at a fraction of the makespan and ?focus=<cls>
   // isolates one robot -- handy for deep links and for screenshots, since
@@ -341,15 +371,25 @@ async function main() {
   }
   S.seeds = manifest.seeds;
 
-  const asked = Number(new URLSearchParams(location.search).get('seed'));
-  const seed = S.seeds.includes(asked) ? asked : S.seeds[Math.floor(Math.random() * S.seeds.length)];
+  const asked = parseInt(new URLSearchParams(location.search).get('seed'), 10);
+  const seed = Number.isFinite(asked) && asked >= 0 ? asked : Math.floor(Math.random() * 10000);
 
-  $('btn-seed').addEventListener('click', () => {
-    let next = S.data ? S.data.seed : -1;
-    while (S.seeds.length > 1 && next === (S.data ? S.data.seed : -1)) {
-      next = S.seeds[Math.floor(Math.random() * S.seeds.length)];
-    }
-    load(next).catch(() => {});
+  const roll = () => {
+    let n, guard = 0;
+    do {
+      n = Math.floor(Math.random() * 10000);
+    } while (++guard < 50 && S.seeds.length > 1 && S.seed !== null && pick(n) === pick(S.seed));
+    load(n).catch(() => {});
+  };
+  $('btn-seed').addEventListener('click', roll);
+  $('seed-input').addEventListener('change', (e) => {
+    const v = parseInt(e.target.value, 10);
+    if (Number.isFinite(v)) load(Math.max(0, Math.min(999999, v))).catch(() => {});
+    else e.target.value = S.seed;
+  });
+  $('seed-input').addEventListener('keydown', (e) => {
+    e.stopPropagation();                       // let the field own the space bar
+    if (e.key === 'Enter') e.target.blur();
   });
   $('btn-play').addEventListener('click', () => (S.playing ? pause() : play()));
   $('scrub').addEventListener('input', (e) => {
@@ -372,7 +412,7 @@ async function main() {
     if (e.key.toLowerCase() === 'r') $('btn-seed').click();
   });
 
-  await load(seed).catch(() => load(S.seeds[0]));
+  await load(seed).catch(() => load(0));
   requestAnimationFrame(tick);
 }
 

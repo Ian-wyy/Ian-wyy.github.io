@@ -34,17 +34,24 @@ field between them. GitHub Pages is static, so the C++ solver cannot run in the
 browser: `tools/gen_pyrch_demo.py` builds random instances, solves each with the
 real solver, and writes `demo/pyrch/data/NNNN.json`; the page only replays them.
 
+The field is 600 m across and the robots move at 8, 11 and 6 m/s, so route
+costs are travel times in seconds and the replay runs at 20x real time. The
+seed box takes any number and hashes it onto one of the 50 shipped instances;
+which file that is stays an implementation detail.
+
 Regenerate the instances (needs a C++17 compiler and CMake to build PyRCH):
 
 ```bash
 uv venv && . .venv/bin/activate
 uv pip install PyRCH
-python tools/gen_pyrch_demo.py --count 90 --time-limit 4
+python tools/gen_pyrch_demo.py --count 65 --time-limit 4
 ```
 
-Instances where a robot ends up idle or the fleet is badly unbalanced are
-skipped, so the seed you roll always shows the point. Useful query parameters:
-`?seed=42` pins an instance, `&at=0.6` freezes the replay partway through, and
+That keeps roughly 60; trim to 50 and rewrite `data/manifest.json` to match.
+Instances are skipped when a robot ends up idle, the fleet is badly unbalanced,
+or the solver's own cost disagrees with the route geometry, so whatever a
+visitor types always shows the point. Useful query parameters: `?seed=1234`
+picks an instance, `&at=0.6` freezes the replay partway through, and
 `&focus=wheeled` isolates one robot.
 
 ## Previewing locally

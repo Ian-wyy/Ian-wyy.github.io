@@ -34,13 +34,15 @@ from typing import Dict, List, Sequence, Tuple
 
 import pyrch
 
-W = 100.0  # field is [0, W] x [0, W]
+W = 100.0    # the field is [0, W] x [0, W] in layout units
+FRAME = 2.0  # the page draws [-FRAME, W + FRAME]; nothing may be planned outside it
+SCALE = 6.0  # metres per layout unit, so the field is 600 m across
 
 CLASSES = [
-    # key, label, speed (units of distance per unit of time)
-    ("drone", "Drone", 1.10),
-    ("wheeled", "Wheeled", 1.55),
-    ("legged", "Legged", 0.85),
+    # key, label, speed in m/s
+    ("drone", "Drone", 8.0),
+    ("wheeled", "Wheeled", 11.0),
+    ("legged", "Legged", 6.0),
 ]
 SPEED = {k: s for k, _, s in CLASSES}
 BIG = 1.0e5  # cost for a (class, target) pair that is not allowed anyway
@@ -173,7 +175,17 @@ class VisGraph:
     def __init__(self, points: Sequence[Pt], obstacles: Sequence[Poly]):
         self.n_pts = len(points)
         corners = [v for poly in obstacles for v in offset_vertices(poly)]
-        self.nodes: List[Pt] = list(points) + [c for c in corners if not point_in_any(c, obstacles)]
+        # Drop corners outside the drawn frame. The river runs off the map, so
+        # its end corners would otherwise offer a way around it -- a detour that
+        # skips the bridge and visibly leaves the picture. Every node is inside
+        # the frame, and the frame is convex, so no route can leave it either.
+        self.nodes: List[Pt] = list(points) + [
+            c
+            for c in corners
+            if not point_in_any(c, obstacles)
+            and -FRAME <= c[0] <= W + FRAME
+            and -FRAME <= c[1] <= W + FRAME
+        ]
         self.obstacles = list(obstacles)
         n = len(self.nodes)
         self.adj: List[List[Tuple[int, float]]] = [[] for _ in range(n)]
@@ -232,7 +244,7 @@ def make_river(rng: random.Random) -> Tuple[List[Poly], Poly, List[Pt], float]:
     phase = rng.uniform(0, 2 * math.pi)
     hw = rng.uniform(5.5, 7.0)
 
-    ys = [-8.0 + i * (W + 16.0) / 16 for i in range(17)]
+    ys = [-25.0 + i * 7.5 for i in range(21)]  # runs well off the map at both ends
     center = [(cx + amp * math.sin(freq * y + phase), y) for y in ys]
 
     by = rng.uniform(28.0, 72.0)
@@ -279,7 +291,12 @@ def make_rocks(rng: random.Random, river: List[Poly]) -> List[Poly]:
             a = 2 * math.pi * i / k + rng.uniform(-0.12, 0.12)
             rr = r * rng.uniform(0.78, 1.18)
             poly.append((cxr + rr * math.cos(a), cyr + rr * math.sin(a)))
-        rocks.append(convex_hull(poly))
+        hull = convex_hull(poly)
+        # a detour bends around corners offset outside the rock, so leave room
+        # or those corners -- and the route through them -- fall off the map
+        if any(not (4.0 <= x <= W - 4.0 and 4.0 <= y <= W - 4.0) for x, y in hull):
+            continue
+        rocks.append(hull)
     return rocks
 
 
@@ -333,6 +350,8 @@ def build_instance(seed: int) -> Dict:
         ):
             break
 
+    if len(rocks) < 2:
+        return None  # without rocky patches there is no capability constraint to show
     n_rock = min(3, max(2, len(rocks)))
     targets, zone = sample_targets(rng, river, rocks, depot, n_open=15, n_rock=n_rock)
 
@@ -400,7 +419,7 @@ def solve_instance(inst: Dict, time_limit: float) -> Dict:
                     continue
                 d = ds[i][j]
                 blocked = cls == "wheeled" and (zones[i] == 1 or zones[j] == 1)
-                m[i][j] = BIG if (blocked or math.isinf(d)) else d / spd
+                m[i][j] = BIG if (blocked or math.isinf(d)) else d * SCALE / spd
         costs[cls] = m
 
     for cls, _, _ in CLASSES:
@@ -447,14 +466,16 @@ def solve_instance(inst: Dict, time_limit: float) -> Dict:
                     "agent": aid,
                     "cls": cls,
                     "path": path,
+                    # geometry stays in layout units (the page draws in them);
+                    # everything a reader sees is metres and seconds
                     "poly": [[round(x, 2), round(y, 2)] for x, y in poly],
-                    "stops": [round(s, 2) for s in stops],
-                    "length": round(total, 2),
-                    "time": round(total / spd, 2),
+                    "arrive": [round(s * SCALE / spd, 2) for s in stops],
+                    "length": round(total * SCALE, 1),
+                    "time": round(total * SCALE / spd, 1),
                     "solver_time": round(float(times.get(aid, 0.0)), 3),
                 }
             )
-        return {"routes": routes, "makespan": round(max(r["time"] for r in routes), 2)}
+        return {"routes": routes, "makespan": round(max(r["time"] for r in routes), 1)}
 
     best = pack(result.paths, result.times)
 
@@ -487,6 +508,7 @@ def instance_json(seed: int, inst: Dict, sol: Dict) -> Dict:
     return {
         "seed": seed,
         "world": W,
+        "scale": SCALE,
         "terrain": {
             "river": [r2(p) for p in inst["river"]],
             "bridge": r2(inst["bridge"]),
@@ -531,6 +553,9 @@ def main() -> None:
     seeds: List[int] = []
     for seed in range(args.start, args.start + args.count):
         inst = build_instance(seed)
+        if inst is None:
+            print(f"seed {seed}: no room for rocky patches, skipped")
+            continue
         sol = solve_instance(inst, args.time_limit)
         if sol["status"] == "unreachable":
             print(f"seed {seed}: node {sol['node']} unreachable for {sol['cls']}, skipped")
@@ -568,6 +593,7 @@ def main() -> None:
                 "seeds": seeds,
                 "generated": time.strftime("%Y-%m-%d"),
                 "pyrch": pyrch.__version__,
+                "scale": SCALE,
                 "classes": [{"cls": c, "label": l, "speed": s} for c, l, s in CLASSES],
             },
             separators=(",", ":"),

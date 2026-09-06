@@ -23,16 +23,19 @@
         legged robot is slow but is the only ground robot that can walk into them.
         <a href="https://pypi.org/project/PyRCH/">PyRCH</a> minimises the <em>makespan</em> &mdash; the time
         the <em>last</em> robot gets home &mdash; so the plan balances travel time, not distance.
-        Roll a new map and watch the three of them run on one shared clock.
+        Type a seed &mdash; or roll a random one &mdash; and watch the three of them run on one shared clock.
       </p>
 
       <div class="stage" id="stage">
         <div class="mapcol">
-          <svg class="map" id="map" viewBox="0 0 100 100" role="img"
+          <svg class="map" id="map" viewBox="-2 -2 104 104" role="img"
                aria-label="Map of a field with a river, a bridge, rocky patches and robot routes"></svg>
           <div class="controls">
-            <button class="btn" id="btn-seed" title="load another precomputed instance (r)">&#8635; new map</button>
-            <span class="seedtag" id="seedtag">&nbsp;</span>
+            <button class="btn" id="btn-seed" title="pick a random seed (r)">&#8635; random</button>
+            <label class="seedbox">seed
+              <input type="number" id="seed-input" min="0" max="999999" step="1"
+                     inputmode="numeric" aria-label="seed">
+            </label>
             <button class="btn" id="btn-play" title="play / pause (space)">&#9208; pause</button>
             <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="scrub through the run">
             <span class="clock" id="clock">t = 0 / 0</span>
@@ -41,6 +44,7 @@
             <span class="glyph">&#9733;</span> depot &nbsp;&middot;&nbsp;
             <span class="glyph">&#9711;</span> target, any robot &nbsp;&middot;&nbsp;
             <span class="glyph">&#9651;</span> target in the rocks &mdash; drone or legged only
+            <br>600 m field, played at 20&times; real time
           </p>
         </div>
 
@@ -49,6 +53,13 @@
             <div class="num" id="makespan">&mdash;</div>
             <div class="cap">makespan &mdash; when the last robot is home</div>
           </div>
+
+          <div class="chart" id="chart-time"></div>
+          <div class="chart" id="chart-dist"></div>
+          <p class="eqnote">
+            Each robot's time is its own distance divided by its own speed, so the fastest robot covers
+            the most ground without being the one that finishes last.
+          </p>
 
           <div id="cards"></div>
 
@@ -60,8 +71,7 @@
 
           <p class="note-foot">
             Hover a robot to isolate its route; hovering the wheeled robot also crosses out the targets it
-            is not allowed to serve. Notice how the three <em>time</em> bars end up nearly equal while the
-            <em>distance</em> bars do not &mdash; that gap is the heterogeneity.
+            is not allowed to serve. The gap between the two charts is the heterogeneity.
           </p>
         </div>
       </div>
