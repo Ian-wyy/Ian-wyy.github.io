@@ -329,15 +329,6 @@ input[type="range"] {
 
 .bar.is-max .val { color: var(--ink); font-weight: 700; }
 
-.note-foot {
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.5;
-  margin-top: 18px;
-  border-top: 1px solid var(--rule);
-  padding-top: 12px;
-}
-
 .err {
   border: 1px solid #e3c9c9;
   background: #fdf6f6;
