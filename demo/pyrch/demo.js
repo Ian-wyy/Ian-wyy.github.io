@@ -186,10 +186,8 @@ function buildRail() {
   // Time and distance are different quantities on different scales, so they get
   // one grouped chart each. Stacking them per robot invited the reader to
   // compare a time bar against a distance bar, which means nothing.
-  chart('chart-time', 'travel time (s)', 'all three finish together', sol.routes,
-        (r) => r.time, (r) => COLOR[r.cls], label);
-  chart('chart-dist', 'distance covered (m)', 'nothing like equal', sol.routes,
-        (r) => r.length, () => '#b9b9b9', label);
+  chart('chart-time', 'travel time (s)', sol.routes, (r) => r.time, (r) => COLOR[r.cls], label);
+  chart('chart-dist', 'distance covered (m)', sol.routes, (r) => r.length, () => '#b9b9b9', label);
 
   const rail = $('cards');
   rail.textContent = '';
@@ -218,13 +216,13 @@ function buildRail() {
   $('btn-best').classList.toggle('on', S.plan === 'best');
 }
 
-function chart(id, title, caption, routes, value, color, label) {
+function chart(id, title, routes, value, color, label) {
   const box = $(id);
   box.textContent = '';
   const top = Math.max(...routes.map(value));
   const hd = document.createElement('div');
   hd.className = 'chart-hd';
-  hd.innerHTML = `<b>${title}</b> &mdash; ${caption}`;
+  hd.innerHTML = `<b>${title}</b>`;
   box.appendChild(hd);
   for (const r of routes) {
     const v = value(r);
