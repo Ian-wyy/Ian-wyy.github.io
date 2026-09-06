@@ -186,8 +186,8 @@ function buildRail() {
   // Time and distance are different quantities on different scales, so they get
   // one grouped chart each. Stacking them per robot invited the reader to
   // compare a time bar against a distance bar, which means nothing.
-  chart('chart-time', 'travel time (s)', sol.routes, (r) => r.time, (r) => COLOR[r.cls], label);
-  chart('chart-dist', 'distance covered (m)', sol.routes, (r) => r.length, () => '#b9b9b9', label);
+  chart('chart-time', 'travel time (s)', sol.routes, (r) => r.time, label);
+  chart('chart-dist', 'distance covered (m)', sol.routes, (r) => r.length, label);
 
   const rail = $('cards');
   rail.textContent = '';
@@ -216,7 +216,7 @@ function buildRail() {
   $('btn-best').classList.toggle('on', S.plan === 'best');
 }
 
-function chart(id, title, routes, value, color, label) {
+function chart(id, title, routes, value, label) {
   const box = $(id);
   box.textContent = '';
   const top = Math.max(...routes.map(value));
@@ -231,7 +231,7 @@ function chart(id, title, routes, value, color, label) {
     row.dataset.cls = r.cls;
     row.innerHTML =
       `<span class="nm" style="color:${COLOR[r.cls]}">${label(r.cls)}</span>` +
-      `<span class="track"><span class="fill" style="background:${color(r)};width:${(100 * v) / top}%"></span></span>` +
+      `<span class="track"><span class="fill" style="background:${COLOR[r.cls]};width:${(100 * v) / top}%"></span></span>` +
       `<span class="val">${v.toFixed(0)}</span>`;
     row.addEventListener('mouseenter', () => setFocus(r.cls));
     row.addEventListener('mouseleave', () => setFocus(null));
