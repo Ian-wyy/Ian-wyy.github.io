@@ -94,9 +94,19 @@ body {
 /* ── controls ─────────────────────────────────────────── */
 
 .mapkey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 20px;          /* spacing separates the entries, no bullets needed */
   font-size: 13px;
   color: var(--muted);
   margin: 9px 2px 0;
+  line-height: 1.6;
+}
+
+.mapnote {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 2px 2px 0;
   line-height: 1.6;
 }
 
