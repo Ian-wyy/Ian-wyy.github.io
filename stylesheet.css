@@ -81,24 +81,24 @@ tr,
 p,
 a {
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 strong {
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 h2 {
   margin: 0;
   font-weight: normal;
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 22px;
+  font-size: 24px;
 }
 
 .papertitle {
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -106,7 +106,7 @@ h2 {
   padding-top: 20px;
   margin: 0;
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 32px;
+  font-size: 34px;
 }
 
 .one {
@@ -140,6 +140,19 @@ span.highlight {
     display: inline-block;
     border-radius: 10px;
 }
+.ongoing {
+  margin: 0.5em 0 0;
+  padding-left: 1.2em;
+}
+
+.ongoing li {
+  margin-bottom: 0.6em;
+}
+
+.ongoing .who {
+  color: #555;
+}
+
 .news-archive {
   margin: 0 0 2em;
 }
