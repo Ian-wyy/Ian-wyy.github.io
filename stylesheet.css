@@ -78,27 +78,32 @@ body,
 td,
 th,
 tr,
-p,
+p {
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 17px;
+}
+
+/* links and bold text take the size of the text around them */
 a {
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 15px;
+  font-size: inherit;
 }
 
 strong {
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 15px;
+  font-size: inherit;
 }
 
 h2 {
   margin: 0;
   font-weight: normal;
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 24px;
+  font-size: 27px;
 }
 
 .papertitle {
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
 }
 
@@ -106,7 +111,7 @@ h2 {
   padding-top: 20px;
   margin: 0;
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 34px;
+  font-size: 38px;
 }
 
 .one {
